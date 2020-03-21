@@ -39,9 +39,10 @@ void print_deadplay_minefield(int minefield[SIZE][SIZE]);
 void plant_mines(int minefield[SIZE][SIZE]);
 void detectRowColumn(int minefield[SIZE][SIZE], int command, int rowColumn);
 int detectSquare(int minefield[SIZE][SIZE], int row, int column, int size);
-int reveal_winStatus(int minefield[SIZE][SIZE], int row, int column);
+void revealSquare(int minefield[SIZE][SIZE], int row, int column);
 void revealRadial(int minefield[SIZE][SIZE], int row, int column);
 void safeFirstTurn(int minefield[SIZE][SIZE], int row, int column, int firstTurn);
+int winStatus(int minefield[SIZE][SIZE], int row, int column);
 
 int main(void) {
 
@@ -59,7 +60,7 @@ int main(void) {
     int command;
     int gamemode = 0; // debug mode (0) or gameplay mode (1), debug mode is the default/initial mode
     int hintCounter = 0; // Counter to see how many hints been used
-    int firstTurn = 0; // Counter to see if the first turn has been used or not (If > 0, then been used)
+    int firstTurn = 0; // if = 0, first turn is still unusued
     print_debug_minefield(minefield);
 
     // The following while loop scans in commands to play the game until the game ends.
@@ -110,14 +111,16 @@ int main(void) {
                 // Safe First Turn :o
                 safeFirstTurn(minefield, row, column, firstTurn);
                 
-                int winStatus = reveal_winStatus(minefield, row, column);
-                if (winStatus == 1) { // if you win
+                revealSquare(minefield, row, column);
+
+                int winOrLose = winStatus(minefield, row, column);
+                if (winOrLose == 1) { // if you win
                     print_debug_minefield(minefield);
                     return 1;
-                } else if (winStatus == 2) { // if you lose
+                } else if (winOrLose == 2) { // if you lose
                     print_debug_minefield(minefield);
                     return 1;
-                } else if (winStatus == 0) { // game continues...
+                } else if (winOrLose == 0) { // game continues...
                     minefield[row][column] = 0;
                 }
                 print_debug_minefield(minefield);
@@ -134,19 +137,20 @@ int main(void) {
             if (command == REVEAL_RADIAL) {
                 int row, column;
                 scanf("%d %d", &row, &column);
-                revealRadial(minefield, row, column);
 
                 // Safe First Turn :o
                 safeFirstTurn(minefield, row, column, firstTurn);
+
+                revealRadial(minefield, row, column);
                 
-                int winStatus = reveal_winStatus(minefield, row, column);
-                if (winStatus == 1) { // if you win
+                int winOrLose = winStatus(minefield, row, column);
+                if (winOrLose == 1) { // if you win
                     print_debug_minefield(minefield);
                     return 1;
-                } else if (winStatus == 2) { // if you lose
+                } else if (winOrLose == 2) { // if you lose
                     print_debug_minefield(minefield);
                     return 1;
-                } else if (winStatus == 0) { // game continues...
+                } else if (winOrLose == 0) { // game continues...
                     minefield[row][column] = 0;
                 }
                 print_debug_minefield(minefield);
@@ -187,14 +191,16 @@ int main(void) {
                     // Safe First Turn :o
                     safeFirstTurn(minefield, row, column, firstTurn);
                     
-                    int winStatus = reveal_winStatus(minefield, row, column);
-                    if (winStatus == 1) { // if you win
+                    revealSquare(minefield, row, column);
+
+                    int winOrLose = winStatus(minefield, row, column);
+                    if (winOrLose == 1) { // if you win
                         print_gameplay_minefield(minefield);
                         return 1;
-                    } else if (winStatus == 2) { // if you lose
+                    } else if (winOrLose == 2) { // if you lose
                         print_deadplay_minefield(minefield);
                         return 2;
-                    } else if (winStatus == 0) { // game continues...
+                    } else if (winOrLose == 0) { // game continues...
                         minefield[row][column] = 0;
                     }
                     firstTurn++;
@@ -204,19 +210,20 @@ int main(void) {
                 if (command == REVEAL_RADIAL) {
                     int row, column;
                     scanf("%d %d", &row, &column);
-                    revealRadial(minefield, row, column);
 
                     // Safe First Turn :o
                     safeFirstTurn(minefield, row, column, firstTurn);
 
-                    int winStatus = reveal_winStatus(minefield, row, column);
-                    if (winStatus == 1) { // if you win
+                    revealRadial(minefield, row, column);
+
+                    int winOrLose = winStatus(minefield, row, column);
+                    if (winOrLose == 1) { // if you win
                         print_gameplay_minefield(minefield);
                         return 1;
-                    } else if (winStatus == 2) { // if you lose
+                    } else if (winOrLose == 2) { // if you lose
                         print_deadplay_minefield(minefield);
                         return 2;
-                    } else if (winStatus == 0) { // game continues...
+                    } else if (winOrLose == 0) { // game continues...
                         minefield[row][column] = 0;
                     }
                     firstTurn++;
@@ -469,8 +476,8 @@ int detectSquare(int minefield[SIZE][SIZE], int row, int column, int size) {
     return detected;
 }
 
-// Function to reveal 3x3 squares and see if you won the game or not (Stage 02, command 4)
-int reveal_winStatus(int minefield[SIZE][SIZE], int row, int column) {
+// Function to reveal 3x3 squares (Stage 02, command 4)
+void revealSquare(int minefield[SIZE][SIZE], int row, int column) {
     int detected = 0;
     int detectCounter = row - 1;
     int columnCounter = column - 1;
@@ -499,18 +506,23 @@ int reveal_winStatus(int minefield[SIZE][SIZE], int row, int column) {
             columnCounter++;
             detectCounter = row - 1;
         }
-        detectCounter = 0;
-        columnCounter = 0;
-        while (columnCounter < SIZE){
-            while (detectCounter < SIZE) {
-                if (minefield[detectCounter][columnCounter] == 0 || minefield[detectCounter][columnCounter] == 2) {
-                    detected++;
-                }
-                detectCounter++; 
+    }
+}
+
+//  To see if you won or lost the game 
+int winStatus(int minefield[SIZE][SIZE], int row, int column) {
+    int detected = 0;
+    int detectCounter = 0;
+    int columnCounter = 0;
+    while (columnCounter < SIZE) {
+        while (detectCounter < SIZE) {
+            if (minefield[detectCounter][columnCounter] == 0 || minefield[detectCounter][columnCounter] == 2) {
+                detected++;
             }
-            columnCounter++;
-            detectCounter = 0;    
+            detectCounter++; 
         }
+        columnCounter++;
+        detectCounter = 0;    
     }
     // The following if/else if statements return a value, indicating whether you win the game or not
     if (detected == SIZE * SIZE) { // If you clear the minefield without dying :>
