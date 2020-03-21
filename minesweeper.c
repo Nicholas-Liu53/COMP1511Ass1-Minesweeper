@@ -317,7 +317,7 @@ void print_gameplay_minefield(int minefield[SIZE][SIZE]) {
                 if (detectSquare(minefield, rowCounter, columnCounter, 3) == 0) {
                     printf("  |\n");
                 } else {
-                    printf("0%d|", detectSquare(minefield, rowCounter, columnCounter, 3));
+                    printf("0%d|\n", detectSquare(minefield, rowCounter, columnCounter, 3));
                 }
             }
             rowCounter++;
@@ -388,7 +388,7 @@ void print_deadplay_minefield(int minefield[SIZE][SIZE]) {
                 if (detectSquare(minefield, i, columnCounter, 3) == 0) {
                     printf("  |\n");
                 } else {
-                    printf("0%d|", detectSquare(minefield, i, columnCounter, 3));
+                    printf("0%d|\n", detectSquare(minefield, i, columnCounter, 3));
                 }
             }
             i++;
