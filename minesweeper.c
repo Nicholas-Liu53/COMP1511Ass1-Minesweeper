@@ -301,10 +301,10 @@ void print_gameplay_minefield(int minefield[SIZE][SIZE]) {
                 printf("## ");
             }
             if (minefield[columnCounter][rowCounter] == 0) {
-                if (detectSquare(minefield, rowCounter, columnCounter, 3) == 0) {
+                if (detectSquare(minefield, columnCounter, rowCounter, 3) == 0) {
                     printf("   ");
                 } else {
-                    printf("0%d ", detectSquare(minefield, rowCounter, columnCounter, 3));
+                    printf("0%d ", detectSquare(minefield, columnCounter, rowCounter, 3));
                 }
             }
             rowCounter++;
@@ -314,10 +314,10 @@ void print_gameplay_minefield(int minefield[SIZE][SIZE]) {
                 printf("##|\n");
             }
             if (minefield[columnCounter][rowCounter] == 0) {
-                if (detectSquare(minefield, rowCounter, columnCounter, 3) == 0) {
+                if (detectSquare(minefield, columnCounter, rowCounter, 3) == 0) {
                     printf("  |\n");
                 } else {
-                    printf("0%d|\n", detectSquare(minefield, rowCounter, columnCounter, 3));
+                    printf("0%d|\n", detectSquare(minefield, columnCounter, rowCounter, 3));
                 }
             }
             rowCounter++;
